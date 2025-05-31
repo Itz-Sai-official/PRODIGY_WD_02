@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch Web Application</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Montserrat:wght@300;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #0A1128;
+            --accent-color: #00E8FC;
+            --accent-color-dark: #00B2C2;
+            --secondary-color: #FF3366;
+            --tertiary-color: #7D1D3F;
+            --neutral-dark: #1B2033;
+            --neutral-light: #E8F1F2;
+        }
+        
+        body {
+            background-color: var(--primary-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 232, 252, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 51, 102, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+            color: var(--neutral-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: linear-gradient(0deg, transparent, var(--accent-color), var(--accent-color));
+            animation: rotate 4s linear infinite;
+            z-index: 0;
+        }
+        
+        body::after {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            background-color: var(--primary-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 232, 252, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 51, 102, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+            z-index: -1;
+        }
+        
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+            background-color: rgba(27, 32, 51, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(0, 232, 252, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4),
+                        0 0 20px rgba(0, 232, 252, 0.2),
+                        inset 0 0 10px rgba(0, 232, 252, 0.1);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glow-effect {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%);
+            opacity: 0.07;
+            filter: blur(15px);
+            animation: pulse 4s infinite alternate;
+        }
+        
+        .glow-1 {
+            top: -50px;
+            left: -50px;
+            animation-delay: 0s;
+        }
+        
+        .glow-2 {
+            bottom: -30px;
+            right: -30px;
+            background: radial-gradient(circle, var(--secondary-color) 0%, transparent 70%);
+            animation-delay: 2s;
+        }
+        
+        @keyframes pulse {
+            0% {
+                opacity: 0.03;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0.1;
+                transform: scale(1.2);
+            }
+        }
+        
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem;
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, var(--accent-color), var(--neutral-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            position: relative;
+            text-align: center;
+            font-weight: 700;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+        
+        .display-container {
+            position: relative;
+            margin: 30px 0;
+            padding: 10px;
+            border-radius: 15px;
+            background: linear-gradient(145deg, rgba(11, 18, 40, 0.8), rgba(27, 32, 51, 0.9));
+            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2),
+                       -10px -10px 20px rgba(255, 255, 255, 0.03);
+        }
+        
+        .display {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            padding: 20px 10px;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px rgba(0, 232, 252, 0.5);
+            background-color: var(--neutral-dark);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 232, 252, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+            20% {
+                left: 100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            color: var(--neutral-light);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: scale(0);
+            transition: transform 0.5s ease;
+        }
+        
+        button:hover::before {
+            transform: scale(1);
+        }
+        
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        #startBtn {
+            background: linear-gradient(145deg, var(--accent-color), var(--accent-color-dark));
+            border-color: var(--accent-color);
+        }
+        
+        #pauseBtn {
+            background: linear-gradient(145deg, #F7B801, #EB9D00);
+            border-color: #F7B801;
+        }
+        
+        #resetBtn {
+            background: linear-gradient(145deg, var(--secondary-color), var(--tertiary-color));
+            border-color: var(--secondary-color);
+        }
+        
+        #lapBtn {
+            background: linear-gradient(145deg, #7678ED, #5D60D6);
+            border-color: #7678ED;
+        }
+        
+        .laps-section {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(0, 232, 252, 0.1);
+            max-height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .laps-title {
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        
+        .laps-container {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 5px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 232, 252, 0.3) rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            background: rgba(11, 18, 40, 0.3);
+        }
+        
+        .lap-list {
+            list-style: none;
+            padding: 5px;
+            text-align: left;
+            margin: 0;
+        }
+        
+        .lap-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: linear-gradient(145deg, rgba(11, 18, 40, 0.5), rgba(27, 32, 51, 0.6));
+            border-left: 3px solid var(--accent-color);
+            border-radius: 5px;
+            font-size: 1rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+            scroll-margin: 8px;
+        }
+        
+        .lap-item:hover {
+            transform: translateX(5px);
+            border-left-width: 6px;
+        }
+        
+        .lap-number {
+            font-weight: 500;
+            color: var(--accent-color);
+        }
+        
+        .lap-time {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neutral-light);
+        }
+        
+        /* Custom scrollbar - improved visibility */
+        .laps-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .laps-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin: 5px;
+        }
+        
+        .laps-container::-webkit-scrollbar-thumb {
+            background: rgba(0, 232, 252, 0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 232, 252, 0.2);
+        }
+        
+        .laps-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 232, 252, 0.7);
+        }
+        
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            .display {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                gap: 10px;
+            }
+            
+            button {
+                width: 80px;
+                height: 80px;
+                font-size: 0.85rem;
+                padding: 0;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="glow-effect glow-1"></div>
+        <div class="glow-effect glow-2"></div>
+        <h1>STOPWATCH</h1>
+        <div class="display-container">
+            <div class="display" id="display">00:00:00.000</div>
+        </div>
+        <div class="controls">
+            <button id="startBtn">Start</button>
+            <button id="pauseBtn">Pause</button>
+            <button id="resetBtn">Reset</button>
+            <button id="lapBtn">Lap</button>
+        </div>
+        <div class="laps-section">
+            <div class="laps-title">Lap Times</div>
+            <div class="laps-container">
+                <ul class="lap-list" id="lapList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const display = document.getElementById('display');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const lapList = document.getElementById('lapList');
+        
+        // Stopwatch variables
+        let startTime = 0;
+        let elapsedTime = 0;
+        let timerInterval;
+        let running = false;
+        let lapCount = 0;
+        let lastLapTime = 0;
+        
+        // Audio effects
+        const createAudio = (frequency, duration) => {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.value = frequency;
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log('Audio not supported in this browser');
+            }
+        };
+        
+        // Button sound effects
+        const playStartSound = () => createAudio(880, 0.1);
+        const playPauseSound = () => createAudio(660, 0.1);
+        const playResetSound = () => createAudio(440, 0.1);
+        const playLapSound = () => createAudio(770, 0.1);
+        
+        // Function to format time as HH:MM:SS.MMM
+        function formatTime(timeInMs) {
+            const milliseconds = Math.floor((timeInMs % 1000));
+            const seconds = Math.floor((timeInMs / 1000) % 60);
+            const minutes = Math.floor((timeInMs / (1000 * 60)) % 60);
+            const hours = Math.floor((timeInMs / (1000 * 60 * 60)));
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
+        }
+        
+        // Update display function
+        function updateDisplay() {
+            const currentTime = Date.now();
+            elapsedTime = currentTime - startTime;
+            display.textContent = formatTime(elapsedTime);
+        }
+        
+        // Start button function
+        startBtn.addEventListener('click', function() {
+            if (!running) {
+                playStartSound();
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(updateDisplay, 10);
+                running = true;
+                
+                // Toggle button states
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
+                lapBtn.disabled = false;
+                
+                // Add active class for visual feedback
+                startBtn.classList.add('active');
+                setTimeout(() => startBtn.classList.remove('active'), 200);
+            }
+        });
+        
+        // Pause button function
+        pauseBtn.addEventListener('click', function() {
+            if (running) {
+                playPauseSound();
+                clearInterval(timerInterval);
+                running = false;
+                
+                // Toggle button states
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                
+                // Add active class for visual feedback
+                pauseBtn.classList.add('active');
+                setTimeout(() => pauseBtn.classList.remove('active'), 200);
+            }
+        });
+        
+        // Reset button function
+        resetBtn.addEventListener('click', function() {
+            playResetSound();
+            clearInterval(timerInterval);
+            running = false;
+            elapsedTime = 0;
+            display.textContent = "00:00:00.000";
+            lapList.innerHTML = "";
+            lapCount = 0;
+            lastLapTime = 0;
+            
+            // Reset button states
+            startBtn.disabled = false;
+            pauseBtn.disabled = false;
+            lapBtn.disabled = false;
+            
+            // Add active class for visual feedback
+            resetBtn.classList.add('active');
+            setTimeout(() => resetBtn.classList.remove('active'), 200);
+        });
+        
+        // Lap button function
+        lapBtn.addEventListener('click', function() {
+            if (running) {
+                playLapSound();
+                lapCount++;
+                const totalLapTime = elapsedTime;
+                const lapDuration = totalLapTime - lastLapTime;
+                
+                // Create new lap element
+                const lapItem = document.createElement('li');
+                lapItem.className = 'lap-item';
+                
+                // Create lap number and time elements
+                const lapNumber = document.createElement('span');
+                lapNumber.className = 'lap-number';
+                lapNumber.textContent = `Lap ${lapCount}`;
+                
+                const lapTime = document.createElement('span');
+                lapTime.className = 'lap-time';
+                lapTime.textContent = formatTime(lapDuration);
+                
+                // Append elements to lap item
+                lapItem.appendChild(lapNumber);
+                lapItem.appendChild(lapTime);
+                
+                // Add lap to list (at the beginning for newest on top)
+                lapList.insertBefore(lapItem, lapList.firstChild);
+                
+                // Update last lap time
+                lastLapTime = totalLapTime;
+                
+                // Add active class for visual feedback
+                lapBtn.classList.add('active');
+                setTimeout(() => lapBtn.classList.remove('active'), 200);
+            }
+        });
+        
+        // Initialize button states
+        pauseBtn.disabled = true;
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Space key for start/pause
+            if (e.code === 'Space') {
+                if (running) {
+                    pauseBtn.click();
+                } else {
+                    startBtn.click();
+                }
+                e.preventDefault();
+            }
+            // 'R' key for reset
+            else if (e.code === 'KeyR') {
+                resetBtn.click();
+                e.preventDefault();
+            }
+            // 'L' key for lap
+            else if (e.code === 'KeyL' && running) {
+                lapBtn.click();
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
