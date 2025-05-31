@@ -2,7 +2,7 @@
 Stopwatch web Application 
 
 Goal of the Project:
-The primary goal of the Stopwatch Web Application is to develop a responsive and user-friendly web-based tool that allows users to measure elapsed time accurately. The application should support functionalities such as start, pause, reset, and lap recording, using web technologies like HTML, CSS, and JavaScript.
+The primary goal of the Stopwatch Web Application is to develop a responsive and user-friendly web-based tool that allows users to measure elapsed time accurately. The application should support functionalities such as start, pause, reset, and lap recording, using web technologies like HTML.
 
  What Can It Be Used For?
 A stopwatch web app can be used in a variety of scenarios, including:
